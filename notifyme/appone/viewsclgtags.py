@@ -54,12 +54,12 @@ class get_delete_update_clgtags(RetrieveUpdateDestroyAPIView):
 class get_post_clgtags(ListCreateAPIView):
 	serializer_class = ClgtagsSerializer
 	def get(self,request):
-		clgtags = Clgtagsdb.objects.all()
+		students_college=request.data['clg_id']
+		clgtags = Clgtagsdb.objects.filter(clg_id=students_college)
 		newrequest=[]
 		for i in range(0,len(clgtags)):
-			clgid=clgtags[i].clg_id
 			tagname=Tagsdb.objects.get(tag_id=clgtags[i].tag_id).tag_name
-			j={"clg_id":clgid,"tag_name":tagname}
+			j={"tag_name":tagname}
 			newrequest.append(j)		
 		return Response(newrequest)
 		#serializer = ClgtagsSerializer(clgtags, many=True)
@@ -68,7 +68,10 @@ class get_post_clgtags(ListCreateAPIView):
 	def post(self,request):
 		mytagname=request.data['tag_name']
 		mytagid=Tagsdb.objects.get(tag_name=mytagname)
-		newrequest={"clg_id":request.data['clg_id'],"tag_id":mytagid.tag_id}
+		newrequest={
+			"clg_id":request.data['clg_id'],
+			"tag_id":mytagid.tag_id
+			}
 		serializer = ClgtagsSerializer(data=newrequest)
 		if serializer.is_valid():
 			serializer.save()

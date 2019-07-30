@@ -48,15 +48,6 @@ class Eventsdb(models.Model):
         managed = False
         db_table = 'eventsdb'
 
-class Followsdb(models.Model):
-    follow_id = models.AutoField(primary_key=True)
-    student_id = models.IntegerField(blank=True, null=True)
-    tag_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'followsdb'
-
 class Tagsdb(models.Model):
     tag_id = models.AutoField(primary_key=True)
     tag_name = models.CharField(max_length=100, blank=True, null=True)

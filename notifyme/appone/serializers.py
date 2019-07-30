@@ -4,8 +4,6 @@ from .models import Clgtagsdb
 from .models import Detailsdb
 from .models import Eventsdb
 from .models import Tagsdb
-from .models import Followsdb
-
 
 class ClgsSerializer(serializers.ModelSerializer):  # create class to serializer model
     class Meta:
@@ -32,7 +30,3 @@ class TagsSerializer(serializers.ModelSerializer):  # create class to serializer
         model = Tagsdb
         fields = ('tag_name',)
 
-class FollowsSerializer(serializers.ModelSerializer):  # create class to serializer model
-    class Meta:
-        model = Followsdb
-        fields = ('student_id','tag_id')
