@@ -11,6 +11,7 @@ from rest_framework.generics import ListCreateAPIView
 from .serializers import FollowsSerializer
 
 from .models import Followsdb
+from .models import Tagsdb
 
 # Create your views here.
 class get_delete_update_follows(RetrieveUpdateDestroyAPIView):
@@ -55,7 +56,12 @@ class get_post_follows(ListCreateAPIView):
 		serializer = FollowsSerializer(follows, many=True)
 		return Response(serializer.data)
 	def post(self,request):
-		serializer = FollowsSerializer(data=request.data)
+		mytagid=Tagsdb.objects.get(tag_name=request.data['tag_name']).tag_id
+		newrequest={
+			"student_id":request.data['student_id'],
+			"tag_id":mytagid
+		}
+		serializer = FollowsSerializer(data=newrequest)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)

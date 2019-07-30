@@ -9,8 +9,11 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.generics import ListCreateAPIView
 
 from .serializers import EventsSerializer
+from .serializers import TagsSerializer
 
 from .models import Eventsdb
+from .models import Tagsdb
+
 
 # Create your views here.
 class get_delete_update_events(RetrieveUpdateDestroyAPIView):
@@ -52,10 +55,35 @@ class get_post_events(ListCreateAPIView):
 	serializer_class = EventsSerializer
 	def get(self,request):
 		events = Eventsdb.objects.all()
-		serializer = EventsSerializer(events, many=True)
-		return Response(serializer.data)
+		newrequest=[]
+		for i in range(0,len(events)):
+			clgid=events[i].clg_id
+			eventname=events[i].event_name
+			eventdesc=events[i].event_desc
+			eventdate=events[i].event_date
+			eventtime=events[i].event_time
+			eventphotourl=events[i].event_photourl
+			eventattenders=events[i].event_attenders
+			tagname=Tagsdb.objects.get(tag_id=events[i].tag_id).tag_name
+			j={"clg_id":clgid,
+			"tag_name":tagname,
+			"event_name":eventname,
+			"event_desc":eventdesc,
+			"event_date":eventdate,
+			"event_time":eventtime,
+			"event_photourl":eventphotourl,
+			"event_attenders":eventattenders
+			}
+			newrequest.append(j)			
+		return Response(newrequest)
+		#serializer = EventsSerializer(events, many=True)
+		#return Response(serializer.data)
 	def post(self,request):
-		serializer = EventsSerializer(data=request.data)
+		mytagname=request.data['tag_name']
+		mytagid=Tagsdb.objects.get(tag_name=mytagname)
+		newrequest={"clg_id":request.data['clg_id'],"tag_id":mytagid.tag_id,"event_name":request.data['event_name'],"event_desc":request.data['event_desc'],"event_date":request.data['event_date'],"event_time":request.data['event_time'],"event_photourl":request.data['event_photourl']}
+		newrequest['event_attenders']=0
+		serializer = EventsSerializer(data=newrequest)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)

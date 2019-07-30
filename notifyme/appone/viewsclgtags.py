@@ -9,8 +9,11 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.generics import ListCreateAPIView
 
 from .serializers import ClgtagsSerializer
-
+from .serializers import TagsSerializer
 from .models import Clgtagsdb
+from .models import Tagsdb
+
+import json
 
 # Create your views here.
 class get_delete_update_clgtags(RetrieveUpdateDestroyAPIView):
@@ -52,10 +55,21 @@ class get_post_clgtags(ListCreateAPIView):
 	serializer_class = ClgtagsSerializer
 	def get(self,request):
 		clgtags = Clgtagsdb.objects.all()
-		serializer = ClgtagsSerializer(clgtags, many=True)
-		return Response(serializer.data)
+		newrequest=[]
+		for i in range(0,len(clgtags)):
+			clgid=clgtags[i].clg_id
+			tagname=Tagsdb.objects.get(tag_id=clgtags[i].tag_id).tag_name
+			j={"clg_id":clgid,"tag_name":tagname}
+			newrequest.append(j)		
+		return Response(newrequest)
+		#serializer = ClgtagsSerializer(clgtags, many=True)
+		#return HttpResponse(serializer.data)
+		#return Response(serializer.data)
 	def post(self,request):
-		serializer = ClgtagsSerializer(data=request.data)
+		mytagname=request.data['tag_name']
+		mytagid=Tagsdb.objects.get(tag_name=mytagname)
+		newrequest={"clg_id":request.data['clg_id'],"tag_id":mytagid.tag_id}
+		serializer = ClgtagsSerializer(data=newrequest)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
